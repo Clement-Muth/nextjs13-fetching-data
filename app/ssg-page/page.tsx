@@ -1,19 +1,27 @@
-import { GetStaticPropsContext, NextPage } from "next";
+import { User } from "@/types/user";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-export default async function SSGPage() {
-  const weather = await (
-    await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=48.58363&lon=7.749753&appid=${process.env.API_KEY}`,
-      { cache: "force-cache" }
-    )
+export default async function SSRPage() {
+  const users: User[] = await (
+    await fetch("http://localhost:3000/api/users/getAllUsers", {
+      method: "GET",
+      cache: "force-cache"
+    })
   ).json();
+
+  if (!users) return notFound();
 
   return (
     <>
-      <h1 className="text-4xl">Hello Clément</h1>
-      <h2 className="text-2xl">
-        Il fait {(Number(weather.main.feels_like) - 273, 15)}°C à {}
-      </h2>
+      <h2 className="text-2xl">Voir les profils de nos utilisateurs</h2>
+      <nav>
+        {users.map((user) => (
+          <li key={user.id}>
+            <Link href={`/ssg-page/${user.id}`}>{user.name}</Link>
+          </li>
+        ))}
+      </nav>
     </>
   );
 }
