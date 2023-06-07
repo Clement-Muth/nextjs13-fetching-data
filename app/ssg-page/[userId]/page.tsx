@@ -24,9 +24,9 @@ export default async function UserPage({ params: { userId } }: { params: { userI
 export async function generateStaticParams() {
   const users: User[] = await (
     await fetch("http://localhost:3000/api/users/getAllUsers", {
-      method: "POST"
+      method: "GET"
     })
-  ).json();
+  )?.json();
 
   return users.map((user) => ({
     userId: user.id
